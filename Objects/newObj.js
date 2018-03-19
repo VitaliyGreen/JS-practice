@@ -16,7 +16,15 @@ function Calculator() {
   };
 }
 
-var calculator = new Calculator;
-calculator.read();
-console.log('The sum is ' + calculator.sum());
-console.log('The multiple is ' + calculator.mul());
+function Accumulator(startingValue) {
+  this.value = +startingValue;
+
+  this.read = function () {
+    this.value += +readlineSync.question('Enter number to sum ');
+  };
+}
+
+var accumulator = new Accumulator(1);
+accumulator.read();
+accumulator.read();
+console.log(accumulator.value);
