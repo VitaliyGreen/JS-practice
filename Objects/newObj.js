@@ -2,6 +2,16 @@
 const readlineSync = require('readline-sync');
 
 function Calculator() {
+
+  var operations = {
+    '-': function (a, b) {
+      return +a - +b;
+    },
+    '+': function (a, b) {
+      return +a + +b;
+    }
+  }
+
   this.read = function () {
     this.a = readlineSync.question('Enter the first number \n');
     this.b = readlineSync.question('Enter the second number \n')
@@ -14,6 +24,22 @@ function Calculator() {
   this.mul = function () {
     return this.a * this.b;
   };
+
+  this.calculate = function (str) {
+    const split = str.split(' ');
+    const a = split[0];
+    const op = split[1];
+    const b = split[2];
+
+    if (isNaN(a) || isNaN(b)) {
+      return NaN;
+    }
+    return operations[op](a, b);
+  };
+
+  this.addMethod = function (name, func) {
+    operations[name] = func;
+  }
 }
 
 function Accumulator(startingValue) {
@@ -24,7 +50,12 @@ function Accumulator(startingValue) {
   };
 }
 
-var accumulator = new Accumulator(1);
-accumulator.read();
-accumulator.read();
-console.log(accumulator.value);
+var calculator = new Calculator;
+calculator.addMethod('*', function (a, b) {
+  return +a * +b;
+});
+calculator.addMethod('**', function (a, b) {
+  return Math.pow(+a, +b);
+});
+console.log(calculator.calculate('2 * 3'));
+console.log(calculator.calculate('2 ** 3'));
