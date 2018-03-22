@@ -83,6 +83,50 @@ const matrixOperation = {
       }
     }
     return bufMatrix;
+  },
+
+  'determinate' : function(m) {
+    const bufMatrix = new Matrix(m.row, m.column);
+    let denom = 1, exchanges = 0;
+    for (var i = 0; i < m.row; ++i) {
+      bufMatrix.matrix[i] = [];
+      for (var j = 0; j < m.row; ++j) {
+        bufMatrix.matrix[i][j] = m.matrix[i][j];
+      }
+     }
+     bufMatrix.print();
+    for (var i = 0; i < m.row-1; ++i) {
+      var maxN = i, maxValue = Math.abs(bufMatrix.matrix[i][i]);
+      for (var j = i+1; j < m.row; ++j) {
+        var value = Math.abs(bufMatrix.matrix[j][i]);
+        if (value > maxValue) {
+          maxN = j;
+          maxValue = value;
+        }
+      }
+      if (maxN > i) {
+        var temp = bufMatrix.matrix[i];
+        bufMatrix.matrix[i] = bufMatrix.matrix[maxN];
+        bufMatrix.matrix[maxN] = temp;
+        ++exchanges;
+      } else {
+        if (maxValue == 0) return maxValue;
+      }
+      var value1 = bufMatrix.matrix[i][i];
+      for (var j = i+1; j < m.row; ++j) {
+        var value2 = bufMatrix.matrix[j][i];
+        bufMatrix.matrix[j][i] = 0;
+        for (var k = i+1; k < m.row; ++k) {
+          bufMatrix.matrix[j][k] = (bufMatrix.matrix[j][k]*value1-bufMatrix.matrix[i][k]*value2)/denom;
+        }
+      }
+      denom = value1;
+    }
+    if (exchanges%2) {
+      return -bufMatrix.matrix[m.row - 1][m.row - 1];
+    } else {
+      return bufMatrix.matrix[m.row - 1][m.row - 1];
+    }
   }
 }
 
@@ -114,7 +158,7 @@ function user() {
     matrix1.print();
     const mulOnNum = matrixOperation.multOnNum(matrix1,        // multiplying on number
     readlineSync.question('Enter the number to multiply '));
-    console.log('Multiplyed on a number matrix:');
+    console.log('Multiplyed on a number matrix is:');
     mulOnNum.print();
   } else if (index == 'transponate') {
     const matrix1 = new Matrix(readlineSync.question('Enter the number of rows '), //initial first matrix
@@ -140,6 +184,13 @@ function user() {
     } else {
       console.log('Uncorrect input\n');
     }
+  } else if (index == 'det') {
+    const matrix1 = new Matrix(readlineSync.question('Enter the number of rows '), //initial first matrix
+    readlineSync.question('Enter the number of columns '));
+    matrix1.fillByUser();
+    matrix1.print();
+    const det = matrixOperation.determinate(matrix1);
+    console.log('Determinate is: ' + det);
   } else if (index == 'q') {
     process.exit(-1);
   } else if ('?') {
